@@ -796,5 +796,5 @@ DATABASES['default'].update(db_from_env)
   + 먼저, heroku 계정에서 user를 생성한다. 
 ![](./img/fig14_heroku_db_user.png)
 
-- 그리고, 로컬호스트에서도 그대로 반영되는 것을 확인할 수 있다. 
+- 그리고, 로컬호스트에서도 그대로 반영되는 것을 확인할 수 있다..
 ![](./img/fig15_heroku_db_user_local.png)

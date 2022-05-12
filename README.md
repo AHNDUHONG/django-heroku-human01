@@ -799,5 +799,54 @@ DATABASES['default'].update(db_from_env)
 - 그리고, 로컬호스트에서도 그대로 반영되는 것을 확인할 수 있다..
 ![](./img/fig15_heroku_db_user_local.png)
 
-![](./img/fig12_heroku_website.png)
 
+## (3) Create DB
+- 이제 본격적으로 DB 테이블을 만들어본다. 
+- address_book/models.py를 열고 아래와 같이 생성한다. 
+
+```python
+from django.db import models
+
+# Create your models here.
+class Address(models.Model):
+    name    = models.CharField(max_length=200)
+    email   = models.EmailField(max_length=200)
+    phone   = models.CharField(max_length=15)
+    address = models.CharField(max_length=200)
+    city    = models.CharField(max_length=200)
+    state   = models.CharField(max_length=100)
+    zipcode = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.name
+```
+
+- address_book/admin.py를 열고 아래와 같이 코드를 추가하여 models.py DB를 등록한다. 
+```python
+from django.contrib import admin
+from .models import Address
+
+# Register your models here.
+admin.site.register(Address)
+```
+
+- 이제 DB migration을 진행한다. 
+```bash
+$ python manage.py makemigrations
+Migrations for 'address_book':
+  address_book\migrations\0001_initial.py
+    - Create model Address
+$ python manage.py migrate
+Operations to perform:
+  Apply all migrations: address_book, admin, auth, contenttypes, sessions
+Running migrations:
+  Applying address_book.0001_initial... OK
+```
+
+- 실제 DB가 생성이 되었는지 runserver를 실행한다. 
+![](./img/fig16_address_DB.png)
+
+- Address를 클릭한 후, 새로운 데이터를 추가해본다. 
+![](./img/fig17_add_new_data.png)
+
+- 이제 모든 코드를 저장 후, 배포를 시작한다. 

@@ -850,3 +850,103 @@ Running migrations:
 ![](./img/fig17_add_new_data.png)
 
 - 이제 모든 코드를 저장 후, 배포를 시작한다. 
+```bash 
+$ git add .
+$ git commit -am "DB Updated"
+$ git push origin main
+$ git push heroku main
+```
+
+- 이제 heroku 에서 저장된 데이터를 확인할 수 있다. 
+![](./img/fig18_heroku_added_data.png)
+
+## (4) 데이터 보여주기
+- 우선 views.py를 수정한다. 
+```python
+from django.shortcuts import render, redirect
+from .models import Address
+
+# Create your views here.
+def home(request):
+    all_addresses = Address.objects.all
+    return render(request, 'home.html', {'all_addresses' : all_addresses})
+
+def add_address(request):
+    return render(request, 'add_address.html', {})
+```
+
+- home.html 파일을 수정한다. 
+```html
+{% extends 'base.html' %} 
+
+{% block content %}
+<h1>Hello World!</h1>
+
+
+{% if all_addresses %}
+    {% for records in all_addresses %}
+        {{ records.name }}<br/>
+        {{ records.email }}<br/>
+        {{ records.phone }}<br/>
+        {{ records.address }}<br/>
+        {{ records.city }}<br/>
+        {{ records.state }}<br/>
+        {{ records.zip }}<br/>
+        <hr/>
+
+
+
+    {% endfor %}
+
+{% endif %}
+
+{% endblock %}
+```
+
+- 먼저 heroku.com/admin 에서 신규 데이터를 추가한다. 
+- 그리고, 로컬 서버에서 생성된 데이터를 확인한다. 
+![](./img/fig19_show_data.png)
+
+## (5) Bootstrap 적용하기
+- Bootstrap css를 적용하여 home.html을 좀 더 가꾸도록 한다. 
+```html
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Hello World!</h1>
+<br />
+
+<div class="container">
+    <div class="row">
+
+        {% if all_addresses %}
+        {% for records in all_addresses %}
+        <div class="col-sm">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ records.name }}</h5>
+                    <p class="card-text">
+                        {{ records.name }}<br />
+                        {{ records.email }}<br />
+                        {{ records.phone }}<br />
+                        {{ records.address }}<br />
+                        {{ records.city }}<br />
+                        {{ records.state }}<br />
+                        {{ records.zip }}<br />
+                    </p>
+                    <a href="#" class="btn btn-secondary">Edit</a>
+                </div>
+            </div>
+            <br />
+        </div>
+
+        {% endfor %}
+
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+```
+
+- 파일 실행 결과는 아래와 같다. 
+![](./img/fig20_bootstrap.png)

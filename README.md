@@ -725,7 +725,7 @@ $ git push heroku main
 ![](./img/fig12_heroku_website.png)
 
 # Heroku DB 연동
-- 이제 Heroku DB와 연동하는 코드를 작성해본다. 
+- 이제 Heroku DB와 연동하는 코드를 작성해본다..
 
 ## (1) 기본 환경 설정
 - DB 유저를 heroku에 배포하는 코드를 작성한다. 

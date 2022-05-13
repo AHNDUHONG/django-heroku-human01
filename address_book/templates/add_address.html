@@ -1,5 +1,32 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 
 {% block content %}
 <h1>Add Adress Page</h1>
+<br/>
+
+<form method = "POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Full Name" name="name">
+    </div>
+    <div class="mb-3">
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email Address" name="email">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Phone Number" name="phone">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Address" name="address">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="City" name="city">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="State" name="state">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Zipcode" name="zipcode">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
 {% endblock %}

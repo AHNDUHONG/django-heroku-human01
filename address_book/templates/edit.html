@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Edit Adress Page</h1>
+<br/>
+
+{% if get_address %}
+<form method = "POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.name }}" name="name">
+    </div>
+    <div class="mb-3">
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.email }}" name="email">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.phone }}" name="phone">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.address }}" name="address">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.city }}" name="city">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.state }}" name="state">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.zipcode }}" name="zipcode">
+    </div>
+    <div class="mb-3">
+        <input type="hidden" value="{{ get_address.id }}" name="id">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+<br/>
+<form method="POST" action='{% url 'delete' get_address.id %}'>
+    {% csrf_token %}
+    <input type="hidden" value="{{ get_address.id }}" name="id">
+    <button type="submit" class="btn btn-primary">Delete Address</button>
+</form>
+{% endif %}
+{% endblock %}

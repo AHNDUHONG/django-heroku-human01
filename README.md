@@ -717,7 +717,7 @@ DATABASES['default'].update(db_from_env)
 ```bash
 $ git add .
 $ git commit -m "heroku update"
-$ git push
+$ git push origin main
 $ git push heroku main
 ```
 
@@ -950,3 +950,252 @@ def add_address(request):
 
 - 파일 실행 결과는 아래와 같다. 
 ![](./img/fig20_bootstrap.png)
+
+## (6) 주소 추가 (Adding)
+- 입력 폼을 만들기 위해 forms.py를 만들어본다. 
+  + 파일 경로 : address_book/forms.py
+```python
+from dataclasses import field
+from django import forms
+from .models import Address
+
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ['name', 'email', 'phone', 'address', 'city', 'state', 'zipcode', ]
+```
+
+- 이번에는 `add_address.html` 파일에 입력폼을 추가한다. 
+  + URL : https://getbootstrap.com/docs/5.1/forms/overview/
+```html
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Add Adress Page</h1>
+<br/>
+
+<form method = "POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Full Name" name="name">
+    </div>
+    <div class="mb-3">
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Email Address" name="email">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Phone Number" name="phone">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Address" name="address">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="City" name="city">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="State" name="state">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Zipcode" name="zipcode">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endblock %}
+```
+
+- 실행 결과물은 아래와 같다. 
+![](./img/fig21_add_form.png)
+
+- views.py에서 add_address() 함수를 수정한다. 
+  + 입력받은 양식을 추가하는 코드를 작성한다. 
+```python
+from email import message
+from django.shortcuts import render, redirect
+
+from django.shortcuts import render, redirect
+from .models import Address
+from .forms import AddressForm
+from django.contrib import messages
+
+# Create your views here.
+def home(request):
+    all_addresses = Address.objects.all
+    return render(request, 'home.html', {'all_addresses' : all_addresses})
+
+def add_address(request):
+    if request.method == 'POST':
+        form = AddressForm(request.POST or None) 
+        if form.is_valid():
+            form.save()
+            messages.success(request, ('Address Has Been Added!'))
+            return redirect('home')
+        else: 
+            messages.success(request, ('Error'))
+            return render(request, 'add_address.html', {})
+    return render(request, 'add_address.html', {})
+```
+
+- 이번에는 home.html에서 데이터가 실제 추가가 되는 코드를 수정한다. 
+  + div 태그 중 클래스명이 container인 것을 추가한다. 
+```html
+.
+.
+.
+    <div class="container">
+        <br />
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <button class="btn-close" data-bs-dismiss="alert" aria-label="Close">
+                <small><sub></sub></small>
+            </button>
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% block content %}
+        {% endblock %}
+    </div>
+.
+.
+.
+```
+
+- 결과물은 아래와 같다. 
+![](./img/fig22_add_alert.png)
+
+## (7) 주소 수정
+- 이번에는 주소 수정 페이지를 만들 것이다. 
+- 우선 urls.py에 새로운 edit 페이지를 추가한다. 
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='home'), 
+    path('add_address', views.add_address, name="add_address"),
+    path('edit/<list_id>', views.edit, name='edit'),
+]
+```
+
+- 이번에는 home.html에 있는  `<a>` 태그를 아래와 같이 수정한다. 
+```html
+<a href="{% url 'edit' records.id %}" class="btn btn-secondary">Edit</a>
+```
+
+- 이번에는 views.py에서 edit() 함수를 작성한다. 
+```python
+def edit(request, list_id):
+    if request.method == 'POST':
+        current_address = Address.objects.get(pk=list_id)
+        form = AddressForm(request.POST or None, instance=current_address)
+        if form.is_valid():
+            form.save()
+            messages.success(request, ('Address Has Been Edited!'))
+            return redirect('home')
+        else: 
+            messages.success(request, ('Error'))
+            return render(request, 'edit.html', {})
+    else:
+        get_address = Address.objects.get(pk=list_id)
+        return render(request, 'edit.html', {'get_address' : get_address})
+```
+
+- 이번에는 templates/edit.html을 생성하고 아래 코드를 추가한다. 
+```html
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Edit Adress Page</h1>
+<br/>
+
+{% if get_address %}
+<form method = "POST">
+    {% csrf_token %}
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.name }}" name="name">
+    </div>
+    <div class="mb-3">
+        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.email }}" name="email">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.phone }}" name="phone">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.address }}" name="address">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.city }}" name="city">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.state }}" name="state">
+    </div>
+    <div class="mb-3">
+        <input type="text" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" value="{{ get_address.zipcode }}" name="zipcode">
+    </div>
+    <div class="mb-3">
+        <input type="hidden" value="{{ get_address.id }}" name="id">
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</form>
+{% endif %}
+{% endblock %}
+```
+
+- 이제 실제 수정이 되는지 확인한다. 
+![](./img/fig23_edit_page.png)
+
+- home.html에도 반영이 되었다. 
+![](./img/fig24_edit_completed.png)
+
+## (8) 데이터 삭제
+- 앞서 수정 작업 했던 것과 프로세스는 동일하다. 
+- 우선 urls.py에 새로운 페이지를 추가한다. 
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.home, name='home'), 
+    path('add_address', views.add_address, name="add_address"),
+    path('edit/<list_id>', views.edit, name='edit'),
+    path('delete/<list_id>', views.delete, name='delete'),
+]
+```
+
+- 이번에는 views.py delete() 함수를 추가한다. 
+```python
+def delete(request, list_id):
+    if request.method == 'POST':
+        current_address = Address.objects.get(pk=list_id)
+        current_address.delete()
+        messages.success(request, ('Address Has Been Deleted..!'))
+        return redirect('home')
+    else:
+        messages.success(request, ('Nothing To See Here...'))
+        return redirect('home')
+```
+
+- edit.html에서 새로운 form 태그를 추가한다. 
+```html
+.
+.
+.
+<br/>
+<form method="POST" action='{% url 'delete' get_address.id %}'>
+    {% csrf_token %}
+    <input type="hidden" value="{{ get_address.id }}" name="id">
+    <button type="submit" class="btn btn-primary">Delete Address</button>
+</form>
+```
+
+- 실제 데이터가 사라지는지 확인한다. 
+![](./img/fig25_edit_delete.png)
+![](./img/fig26_delete_completed.png)
+
+- 이제 다시 최종 배포를 진행한다. 
+```bash
+$ git add .
+$ git commit -m "heroku update"
+$ git push origin main
+$ git push heroku main
+```

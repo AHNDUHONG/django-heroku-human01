@@ -1,12 +1,17 @@
 # 개요 
 - django, postgres, heroku를 이용해서 배포를 하도록 해본다. 
 
+# Demo
+- 앞으로 만들 Demo 사이트를 확인한다. 
+    + https://django-heroku-human01.herokuapp.com/
+
 # 사전 설치
 - Python, Git는 사전에 설치가 되어야 한다. 
 
-## SSH 키 설정
+## SSH 키 설정 (옵션)
 - SSH 키를 통해 3rd Party와 연동을 보다 쉽게 할 수 있도록 도와준다. 
 - .ssh 폴더를 생성한다. 
+- ssh 깃 연동 : https://hankyeolk.github.io/2021/08/15/githubSSH.html
 ```bash
 $ mkdir .ssh
 ```
